@@ -14,7 +14,7 @@ import csv
 import io
 from collections import Counter
 
-VERSION = "v3.4.0"
+VERSION = "v3.5.0"
 
 # ── 페이지 설정 ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -357,27 +357,6 @@ def build_txt(posts, kw, cnt):
         ]
     return "\n".join(lines)
 
-def build_ai(posts, kw, cnt):
-    total = len(posts)
-    lines = [
-        "아래는 네이버 카페에서 수집한 환자·보호자 실제 경험 게시글입니다.",
-        f"검색 키워드: {kw} | {total}건 | {VERSION}",
-        f"감성: 긍정 {cnt.get('positive',0)} / 중립 {cnt.get('neutral',0)} / "
-        f"부정 {cnt.get('negative',0)} / 혼재 {cnt.get('mixed',0)}",
-        "","--- 수집 데이터 (S/A등급 우선, 상위 30건) ---",
-    ]
-    top = [p for p in posts if p.get("quality_grade") in ("S","A")][:30]
-    top += [p for p in posts if p.get("quality_grade") not in ("S","A")][:max(0,30-len(top))]
-    for p in top[:30]:
-        sent = SENT_KR.get(p.get("sentiment","neutral"),"중립")
-        lines += [f"[{sent}] {clean(p.get('title',''))}", clean(p.get("description",""))[:300],""]
-    lines += ["="*60,"위 데이터를 분석하여 다음 항목을 정리해 주세요:",
-              "1. 핵심 긍정 요인","2. 핵심 부정 요인 및 개선점",
-              "3. 주요 언급 의료진·진료과",
-              "4. 홍보 메시지에 활용할 환자 언어·표현",
-              "5. 신환 유치를 위한 콘텐츠 기획 제안"]
-    return "\n".join(lines)
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 메인 UI
@@ -407,14 +386,13 @@ with st.sidebar:
         placeholder="의료진 이름, 진료과, 질환명\n쉼표 또는 줄바꿈으로 구분",
         height=75, label_visibility="collapsed")
 
-    st.markdown('<p style="font-size:10px;color:#999;margin:0 0 4px">최대 수집 건수 (키워드당)</p>', unsafe_allow_html=True)
-    max_count = st.radio("mc", options=[30,50,100,200], index=2, horizontal=True, label_visibility="collapsed")
+    max_count = st.selectbox("최대 수집 건수 (키워드당)", options=[30,50,100,200], index=2)
 
     st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
 
     st.markdown('<p style="font-size:10px;font-weight:700;color:#999;letter-spacing:0.08em;margin:0 0 5px">🚫 제외 키워드</p>', unsafe_allow_html=True)
     excl_raw = st.text_input("excl",
-        value="동물병원,수의사,한의원,한약,성형외과,미용,보톡스",
+        value="동물병원,수의사,한의원,한약,미용,보톡스,주식,증권,코스피,코스닥,ETF",
         label_visibility="collapsed")
 
     st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
@@ -567,11 +545,10 @@ st.markdown('<div class="panel-header">📤 데이터 출력 및 내보내기</d
 
 csv_data = build_csv(posts)
 txt_data = build_txt(posts, st.session_state.keyword_label, counts)
-ai_data  = build_ai(posts, st.session_state.keyword_label, counts)
 today    = datetime.date.today().strftime("%Y%m%d")
 slug     = re.sub(r"[^\w가-힣]","_", st.session_state.keyword_label)[:20]
 
-e1,e2,e3,e4 = st.columns(4)
+e1,e2 = st.columns(2)
 with e1:
     st.download_button("📊 엑셀 저장 (.csv)",
         data=csv_data.encode("utf-8-sig"),
@@ -582,19 +559,6 @@ with e2:
         data=txt_data.encode("utf-8"),
         file_name=f"DCX_{slug}_{today}_{VERSION}.txt",
         mime="text/plain", use_container_width=True)
-with e3:
-    st.download_button("🤖 AI 분석 프롬프트",
-        data=ai_data.encode("utf-8"),
-        file_name=f"DCX_AI_{slug}_{today}_{VERSION}.txt",
-        mime="text/plain", use_container_width=True)
-with e4:
-    if st.button("📋 AI 프롬프트 미리보기", use_container_width=True):
-        st.session_state.show_ai = not st.session_state.get("show_ai",False)
-
-if st.session_state.get("show_ai",False):
-    st.markdown('<div class="inner-card">', unsafe_allow_html=True)
-    st.text_area("ai", value=ai_data, height=170, label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ── 게시글 + 우측 패널 ───────────────────────────────────────────────────────
@@ -608,13 +572,9 @@ with lc:
     st.markdown('<div class="inner-card">', unsafe_allow_html=True)
     fc, sc = st.columns([1,1])
     with fc:
-        st.markdown('<span style="font-size:10px;color:#888;font-weight:700">감성 필터</span>', unsafe_allow_html=True)
-        filter_tab = st.radio("ft",["전체","긍정","중립","부정","혼재"],
-                              horizontal=True, label_visibility="collapsed")
+        filter_tab = st.selectbox("감성 필터", ["전체","긍정","중립","부정","혼재"])
     with sc:
-        st.markdown('<span style="font-size:10px;color:#888;font-weight:700">정렬 기준</span>', unsafe_allow_html=True)
-        sort_opt = st.radio("st",["최신순","점수순(긍정↑)","점수순(부정↑)","등급순"],
-                            horizontal=True, label_visibility="collapsed")
+        sort_opt = st.selectbox("정렬 기준", ["최신순","점수순(긍정↑)","점수순(부정↑)","등급순"])
     st.markdown('</div>', unsafe_allow_html=True)
 
     sent_map = {"전체":None,"긍정":"positive","중립":"neutral","부정":"negative","혼재":"mixed"}
