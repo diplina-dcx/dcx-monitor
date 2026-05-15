@@ -14,7 +14,7 @@ import csv
 import io
 from collections import Counter
 
-VERSION = "v3.3.0"
+VERSION = "v3.4.0"
 
 # ── 페이지 설정 ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -34,18 +34,17 @@ html, body, [class*="css"] {
     font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
 }
 
-/* ══════════════════════════════════════
-   전체 배경 — 완전 라이트 모드
-══════════════════════════════════════ */
-html, body { background-color: #F0F2F6 !important; color: #111111 !important; }
+/* ══ 전체 배경 — 라이트 모드 ══ */
+html, body { background-color: #F0F2F6 !important; }
+.stApp { background-color: #F0F2F6 !important; }
+.block-container { padding-top: 0.8rem !important; padding-bottom: 2rem !important; }
 
-.stApp,
+/* 모든 컨테이너 배경 투명 (흰 카드만 배경 가짐) */
 .stApp > div,
 [data-testid="stAppViewContainer"],
 [data-testid="stAppViewBlockContainer"],
 section[data-testid="stMain"],
 section[data-testid="stMain"] > div,
-.block-container,
 [data-testid="stVerticalBlock"],
 [data-testid="stVerticalBlockBorderWrapper"],
 [data-testid="stHorizontalBlock"],
@@ -55,92 +54,77 @@ section[data-testid="stMain"] > div,
 .element-container,
 .stMarkdown { background-color: transparent !important; }
 
-/* 페이지 최외곽만 연회색 */
-.stApp { background-color: #F0F2F6 !important; }
-.block-container {
-    padding-top: 0.8rem !important;
-    padding-bottom: 2rem !important;
-}
+/* ── 텍스트 기본 검정 ── */
+body, p, span, div, li { color: #111111; }
+label { color: #333333; }
+h1, h2, h3 { color: #111111; }
 
-/* ── 텍스트 전체 다크 강제 ── */
-body, p, span, label, div, h1, h2, h3, h4, li, a {
-    color: #111111 !important;
-}
-.stRadio label, .stRadio span,
+/* 라디오 텍스트 */
 div[role="radiogroup"] label span,
-div[role="radiogroup"] label p { color: #111111 !important; font-size: 12px !important; }
-.stCaption, .stCaption p { color: #888888 !important; font-size: 11px !important; }
+div[role="radiogroup"] label p,
+.stRadio label span { color: #111111 !important; font-size: 12px !important; }
 
-/* ── 위젯 배경 투명 ── */
-.stRadio, .stRadio > div,
-.stSelectSlider, .stTextInput > div, .stTextArea > div {
-    background-color: transparent !important;
-}
+/* 위젯 배경 투명 */
+.stRadio, .stRadio > div, .stSelectSlider,
+.stTextInput > div, .stTextArea > div { background-color: transparent !important; }
 
-/* ══════════════════════════════════════
-   사이드바 — 흰 배경, 다크 텍스트
-══════════════════════════════════════ */
+/* hr 완전 제거 */
+hr { display: none !important; height: 0 !important; margin: 0 !important; }
+
+/* 빈 마크다운 제거 */
+.stMarkdown:empty, .stMarkdown p:empty { display: none !important; }
+
+/* ══ 사이드바 — 흰 배경 ══ */
 [data-testid="stSidebar"],
-[data-testid="stSidebar"] > div { background-color: #FFFFFF !important; }
+[data-testid="stSidebar"] > div { background-color: #FFFFFF !important; border-right: 0.5px solid #E4E4E4; }
 [data-testid="stSidebar"] * { color: #111111 !important; }
-[data-testid="stSidebar"] label { font-size: 11px !important; font-weight: 600 !important; }
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label { color: #333333 !important; font-size: 11px !important; }
 [data-testid="stSidebar"] input,
 [data-testid="stSidebar"] textarea {
-    background: #F5F5F5 !important;
-    color: #111 !important;
-    border: 0.5px solid #E4E4E4 !important;
-    border-radius: 8px !important;
-    font-size: 12px !important;
+    background: #F5F5F5 !important; color: #111 !important;
+    border: 0.5px solid #E4E4E4 !important; border-radius: 8px !important; font-size: 12px !important;
 }
 [data-testid="stSidebar"] .stButton button {
-    background: #1E6FE8 !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
+    background: #1E6FE8 !important; color: #FFFFFF !important;
+    border: none !important; border-radius: 8px !important;
+    font-size: 12px !important; font-weight: 700 !important;
 }
-[data-testid="stSidebar"] hr { border-color: #EBEBEB !important; margin: 8px 0 !important; }
+/* 사이드바 라디오 버튼 텍스트 */
+[data-testid="stSidebar"] div[role="radiogroup"] label span { color: #111111 !important; font-size: 12px !important; }
 
-/* ══════════════════════════════════════
-   Lv2 흰 패널 카드 — 메인 컨텐츠
-══════════════════════════════════════ */
+/* ══ Lv2 흰 패널 카드 ══ */
 .panel-card {
     background: #FFFFFF !important;
-    border-radius: 20px;
-    border: 0.5px solid #E4E4E4;
-    padding: 18px 20px 20px;
-    margin-bottom: 14px;
+    border-radius: 20px; border: 0.5px solid #E4E4E4;
+    padding: 18px 20px 20px; margin-bottom: 14px;
 }
 .panel-header {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-    color: #999 !important; text-transform: uppercase;
-    border-bottom: 0.5px solid #EBEBEB;
+    font-size: 10px !important; font-weight: 700 !important;
+    letter-spacing: 0.1em; color: #111111 !important;
+    text-transform: uppercase; border-bottom: 0.5px solid #EBEBEB;
     padding-bottom: 7px; margin-bottom: 12px;
 }
 
 /* Lv3 내부 섹션 */
 .inner-card {
-    background: #F5F5F5 !important;
-    border-radius: 8px;
-    border: 0.5px solid #EBEBEB;
-    padding: 10px 12px;
-    margin-bottom: 10px;
+    background: #F5F5F5 !important; border-radius: 8px;
+    border: 0.5px solid #EBEBEB; padding: 10px 12px; margin-bottom: 10px;
 }
 
-/* ── 메인 헤더 ── */
+/* ══ 메인 헤더 ══ */
 .main-header {
     background: linear-gradient(135deg, #1428A0 0%, #1E6FE8 100%);
-    border-radius: 16px;
-    padding: 20px 26px;
-    margin-bottom: 14px;
+    border-radius: 16px; padding: 20px 26px; margin-bottom: 14px;
 }
-.main-header h1 { margin:0; font-size:19px; font-weight:700; color:#fff !important; }
+.main-header h1 { margin:0; font-size:19px; font-weight:700; color:#FFFFFF !important; }
 .main-header p  { margin:3px 0 0; font-size:12px; color:#AAC9F8 !important; }
+.main-header span { color:#FFFFFF !important; }
 
-/* ── 감성 뱃지 ── */
+/* ══ 감성 뱃지 ══ */
 .badge-pos { background:#E8F5EC; color:#1E8A3E !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
-.badge-neu { background:#FFF8E0; color:#B07D00 !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
+.badge-neu { background:#FFF3E0; color:#E65100 !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
 .badge-neg { background:#FDECEA; color:#C0392B !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
 .badge-mix { background:#F3EAF9; color:#7B3FA0 !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
 .badge-s   { background:#1E6FE8; color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
@@ -148,72 +132,57 @@ div[role="radiogroup"] label p { color: #111111 !important; font-size: 12px !imp
 .badge-b   { background:#777;    color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
 .badge-c   { background:#BBB;    color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
 
-/* ── 게시글 카드 ── */
+/* ══ 게시글 카드 ══ */
 .post-card {
-    background: #FFFFFF !important;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 7px;
+    background: #FFFFFF !important; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 7px;
     border-left: 3px solid #E4E4E4;
     border-top: 0.5px solid #F0F0F0;
     border-right: 0.5px solid #F0F0F0;
     border-bottom: 0.5px solid #F0F0F0;
 }
-.post-card.pos { border-left-color: #1E8A3E; }
-.post-card.neg { border-left-color: #C0392B; }
-.post-card.neu { border-left-color: #B07D00; }
-.post-card.mix { border-left-color: #7B3FA0; }
-.post-title { font-size:12px; font-weight:600; color:#111 !important; margin-bottom:3px; line-height:1.5; }
-.post-body  { font-size:11px; color:#555 !important; line-height:1.6; margin-bottom:4px; }
-.post-meta  { font-size:10px; color:#aaa !important; }
+.post-card.pos { border-left-color: #2ECC71; }
+.post-card.neg { border-left-color: #E74C3C; }
+.post-card.neu { border-left-color: #E67E22; }
+.post-card.mix { border-left-color: #9B59B6; }
+.post-title { font-size:12px; font-weight:600; color:#111111 !important; margin-bottom:3px; line-height:1.5; }
+.post-body  { font-size:11px; color:#555555 !important; line-height:1.6; margin-bottom:4px; }
+.post-meta  { font-size:10px; color:#AAAAAA !important; }
 .post-tag   { background:#E8F0FD; color:#0D3A8A !important; border-radius:100px; padding:1px 6px; font-size:9px; margin-right:3px; }
 
-/* ── 지표 카드 ── */
+/* ══ 지표 카드 ══ */
 .metric-card { border-radius: 10px; padding: 12px 8px; text-align: center; }
 .metric-num  { font-size:24px; font-weight:700; line-height:1; }
 .metric-pct  { font-size:11px; margin-top:2px; }
-.metric-lbl  { font-size:10px; margin-top:3px; opacity:0.8; }
+.metric-lbl  { font-size:10px; margin-top:3px; opacity:0.85; }
 
-/* ── 점수 박스 ── */
+/* ══ 점수 박스 ══ */
 .score-box   { background:#E8F0FD !important; border:1px solid #C5D8F9; border-radius:12px; padding:14px; text-align:center; }
 .score-num   { font-size:38px; font-weight:700; color:#1E6FE8 !important; line-height:1; }
 .score-grade { font-size:14px; font-weight:600; margin-top:3px; }
-.score-desc  { font-size:10px; color:#888 !important; margin-top:3px; }
+.score-desc  { font-size:10px; color:#888888 !important; margin-top:3px; }
 
-/* ── 키워드 태그 ── */
+/* ══ 키워드 태그 ══ */
 .kw-tag { display:inline-block; background:#E8F0FD; color:#0D3A8A !important; border-radius:100px; padding:3px 9px; font-size:11px; margin:2px; }
 
-/* ── 버튼 공통 ── */
+/* ══ 버튼 ══ */
 .stButton button, .stDownloadButton button {
-    border-radius: 8px !important;
-    font-family: 'Pretendard', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 12px !important;
-    color: #111111 !important;
+    border-radius: 8px !important; font-family: 'Pretendard', sans-serif !important;
+    font-weight: 600 !important; font-size: 12px !important;
 }
 .stDownloadButton button {
-    background-color: #FFFFFF !important;
-    border: 1px solid #E4E4E4 !important;
-    color: #111111 !important;
+    background-color: #FFFFFF !important; border: 1px solid #E4E4E4 !important; color: #111111 !important;
 }
 .stDownloadButton button:hover {
-    background-color: #F0F4FF !important;
-    border-color: #1E6FE8 !important;
-    color: #1E6FE8 !important;
+    background-color: #F0F4FF !important; border-color: #1E6FE8 !important; color: #1E6FE8 !important;
 }
 
-/* ── 버전 뱃지 ── */
+/* ══ 버전 뱃지 ══ */
 .ver-badge {
     display:inline-block; background:#E8F0FD; color:#1428A0 !important;
     border-radius:100px; padding:2px 9px; font-size:10px; font-weight:700;
     margin-left:8px; vertical-align:middle;
 }
-
-/* ── 불필요한 빈 요소 숨김 ── */
-.stMarkdown:empty,
-.stMarkdown p:empty,
-[data-testid="stMarkdownContainer"]:empty { display: none !important; }
-hr { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -335,8 +304,8 @@ def fetch_cafe(keyword, max_count, cid, csec):
 
 # ── 유틸 ─────────────────────────────────────────────────────────────────────
 SENT_KR    = {"positive":"긍정","neutral":"중립","negative":"부정","mixed":"혼재"}
-SENT_COLOR = {"positive":"#1E8A3E","neutral":"#B07D00","negative":"#C0392B","mixed":"#7B3FA0"}
-SENT_BG    = {"positive":"#E8F5EC","neutral":"#FFF8E0","negative":"#FDECEA","mixed":"#F3EAF9"}
+SENT_COLOR = {"positive":"#2ECC71","neutral":"#E67E22","negative":"#E74C3C","mixed":"#9B59B6"}
+SENT_BG    = {"positive":"#E8F9F0","neutral":"#FFF3E0","negative":"#FDECEA","mixed":"#F3EAF9"}
 SENT_ICON  = {"positive":"😊","neutral":"😐","negative":"😟","mixed":"🔀"}
 
 def fmt_date(raw):
@@ -423,7 +392,7 @@ with st.sidebar:
         f'</div>',
         unsafe_allow_html=True,
     )
-    st.markdown('<hr>', unsafe_allow_html=True)
+    st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
 
     st.markdown('<p style="font-size:10px;font-weight:700;color:#999;letter-spacing:0.08em;margin:0 0 5px">🔑 NAVER API</p>', unsafe_allow_html=True)
     client_id  = st.text_input("cid",  value=st.secrets.get("NAVER_CLIENT_ID",""),
@@ -431,26 +400,26 @@ with st.sidebar:
     client_sec = st.text_input("csec", value=st.secrets.get("NAVER_CLIENT_SECRET",""),
                                type="password", placeholder="Client Secret", label_visibility="collapsed")
 
-    st.markdown('<hr>', unsafe_allow_html=True)
+    st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
 
     st.markdown('<p style="font-size:10px;font-weight:700;color:#999;letter-spacing:0.08em;margin:0 0 5px">🔍 검색 키워드</p>', unsafe_allow_html=True)
     keywords_raw = st.text_area("kw",
         placeholder="의료진 이름, 진료과, 질환명\n쉼표 또는 줄바꿈으로 구분",
         height=75, label_visibility="collapsed")
 
-    st.markdown('<p style="font-size:10px;color:#999;margin:6px 0 3px">최대 수집 건수 (키워드당)</p>', unsafe_allow_html=True)
-    max_count = st.select_slider("mc", options=[30,50,100,200], value=100, label_visibility="collapsed")
+    st.markdown('<p style="font-size:10px;color:#999;margin:0 0 4px">최대 수집 건수 (키워드당)</p>', unsafe_allow_html=True)
+    max_count = st.radio("mc", options=[30,50,100,200], index=2, horizontal=True, label_visibility="collapsed")
 
-    st.markdown('<hr>', unsafe_allow_html=True)
+    st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
 
     st.markdown('<p style="font-size:10px;font-weight:700;color:#999;letter-spacing:0.08em;margin:0 0 5px">🚫 제외 키워드</p>', unsafe_allow_html=True)
     excl_raw = st.text_input("excl",
         value="동물병원,수의사,한의원,한약,성형외과,미용,보톡스",
         label_visibility="collapsed")
 
-    st.markdown('<hr>', unsafe_allow_html=True)
+    st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
     run_btn = st.button("▶  수집 시작", type="primary", use_container_width=True)
-    st.markdown('<hr>', unsafe_allow_html=True)
+    st.markdown('<div style="border-top:0.5px solid #EBEBEB;margin:8px 0"></div>', unsafe_allow_html=True)
     st.markdown(
         f'<p style="font-size:10px;color:#CCC;text-align:center;line-height:1.7">'
         f'Copyright © 2026 Sang-Man Lee<br>DCX Cafe Monitor {VERSION}</p>',
