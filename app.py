@@ -14,7 +14,7 @@ import csv
 import io
 from collections import Counter
 
-VERSION = "v3.0.0"
+VERSION = "v3.1.0"
 
 # ── 페이지 설정 ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -36,6 +36,14 @@ html, body, [class*="css"] {
 /* Lv1 최상위 다크 배경 */
 .stApp { background-color: #1C1C1E; }
 .block-container { padding-top: 0.8rem !important; padding-bottom: 2rem !important; }
+
+/* 메인 컬럼 배경 투명 강제 — 다크 배경 상속 차단 */
+[data-testid="stVerticalBlock"],
+[data-testid="stHorizontalBlock"],
+[data-testid="stColumn"],
+[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stAppViewBlockContainer"] > div { background-color: transparent !important; }
+.stRadio > div, .stSelectSlider { background-color: transparent !important; }
 
 /* ────────────────────────────────────
    사이드바 — 화이트 라이트 모드
@@ -141,20 +149,6 @@ div[role="radiogroup"] label p { color: #111111 !important; font-size: 12px !imp
 .post-body  { font-size:11px; color:#666; line-height:1.6; margin-bottom:4px; }
 .post-meta  { font-size:10px; color:#aaa; }
 .post-tag   { background:#E8F0FD; color:#0D3A8A; border-radius:100px; padding:1px 6px; font-size:9px; margin-right:3px; }
-
-/* 내용 전체보기 패널 */
-.post-full {
-    background: #F8FAFF;
-    border-radius: 8px;
-    border: 0.5px solid #C5D8F9;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: #333;
-    line-height: 1.9;
-    white-space: pre-wrap;
-    word-break: break-all;
-}
 
 /* 지표 카드 */
 .metric-card { border-radius: 10px; padding: 12px 8px; text-align: center; }
@@ -448,7 +442,6 @@ st.markdown(f"""
 # ── 세션 초기화 ───────────────────────────────────────────────────────────────
 if "posts"         not in st.session_state: st.session_state.posts         = []
 if "keyword_label" not in st.session_state: st.session_state.keyword_label = ""
-if "expanded"      not in st.session_state: st.session_state.expanded      = set()
 
 
 # ── 수집 실행 ─────────────────────────────────────────────────────────────────
@@ -484,7 +477,6 @@ if run_btn:
 
     st.session_state.posts         = scored
     st.session_state.keyword_label = ", ".join(keywords)
-    st.session_state.expanded      = set()
     prog.empty()
     st.success(f"✅ 수집 완료 — 유효 게시글 {len(scored)}건 (중복·스팸 제외)")
 
@@ -652,9 +644,11 @@ with lc:
         tags  = p.get("tags",[])
         uid   = f"post_{idx}"
 
-        bs = f'<span class="badge-{sent[:3]}">{SENT_ICON[sent]} {SENT_KR[sent]}</span>'
-        bg = f'<span class="badge-{grd.lower()}">{grd}등급</span>'
-        th = "".join(f'<span class="post-tag">#{t}</span>' for t in tags[:4])
+        bs       = f'<span class="badge-{sent[:3]}">{SENT_ICON[sent]} {SENT_KR[sent]}</span>'
+        bg       = f'<span class="badge-{grd.lower()}">{grd}등급</span>'
+        th       = "".join(f'<span class="post-tag">#{t}</span>' for t in tags[:4])
+        link_btn = (f'<a href="{link}" target="_blank" style="font-size:11px;color:#1E6FE8;'
+                    f'text-decoration:none;font-weight:600">🔗 카페 원문</a>') if link else ""
 
         st.markdown(f"""
         <div class="post-card {sent[:3]}">
@@ -663,40 +657,12 @@ with lc:
                 <span>{bs}&nbsp;{bg}&nbsp;<span style="font-size:10px;color:#bbb">{sc_v:+.1f}점</span></span>
             </div>
             <div class="post-title">{title}</div>
-            <div class="post-body">{desc[:120]}{"…" if len(desc)>120 else ""}</div>
-            <div><span class="post-meta">🕐 {pub}</span>&nbsp;&nbsp;{th}</div>
+            <div class="post-body">{desc[:200]}{"…" if len(desc)>200 else ""}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+                <div><span class="post-meta">🕐 {pub}</span>&nbsp;&nbsp;{th}</div>
+                {link_btn}
+            </div>
         </div>""", unsafe_allow_html=True)
-
-        # 내용 보기 / 접기 + 원문 링크
-        is_open = uid in st.session_state.expanded
-        b1, b2, b3 = st.columns([1.2, 1.5, 4])
-        with b1:
-            if st.button("🔼 접기" if is_open else "📄 내용 보기",
-                         key=f"btn_{uid}", use_container_width=True):
-                if is_open: st.session_state.expanded.discard(uid)
-                else:       st.session_state.expanded.add(uid)
-                st.rerun()
-        with b2:
-            if link:
-                st.markdown(
-                    f'<a href="{link}" target="_blank" '
-                    f'style="font-size:11px;color:#1E6FE8;text-decoration:none;'
-                    f'line-height:2.3;display:block">🔗 카페 원문</a>',
-                    unsafe_allow_html=True)
-
-        # 전체 본문 확장 패널
-        if uid in st.session_state.expanded:
-            st.markdown(f"""
-            <div class="post-full">
-<span style="font-size:11px;color:#1428A0;font-weight:700">📄 수집된 본문 전체</span>
-
-{desc}
-            </div>""", unsafe_allow_html=True)
-
-    if len(filtered) > 50:
-        st.markdown('<p style="font-size:11px;color:#aaa;text-align:center;margin-top:8px">'
-                    '상위 50건 표시 — 전체는 CSV로 다운로드</p>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 with dc:
