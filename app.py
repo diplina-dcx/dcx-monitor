@@ -14,11 +14,11 @@ import csv
 import io
 from collections import Counter
 
-VERSION = "v3.1.0"
+VERSION = "v3.2.0"
 
 # ── 페이지 설정 ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title=f"DCX 카페 평판 모니터 {VERSION}",
+    page_title=f"DCX 고객 경험 평판 모니터 {VERSION}",
     page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -33,17 +33,34 @@ html, body, [class*="css"] {
     font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
 }
 
-/* Lv1 최상위 다크 배경 */
-.stApp { background-color: #1C1C1E; }
-.block-container { padding-top: 0.8rem !important; padding-bottom: 2rem !important; }
+/* ── 전체 레이아웃 배경 ── */
+.stApp { background-color: #1C1C1E !important; }
+.block-container {
+    padding-top: 0.8rem !important;
+    padding-bottom: 2rem !important;
+    background-color: #1C1C1E !important;
+}
 
-/* 메인 컬럼 배경 투명 강제 — 다크 배경 상속 차단 */
+/* ── 메인 영역 모든 컨테이너 배경 완전 투명 ── */
+section[data-testid="stMain"],
+section[data-testid="stMain"] > div,
+[data-testid="stAppViewContainer"],
+[data-testid="stAppViewBlockContainer"],
 [data-testid="stVerticalBlock"],
+[data-testid="stVerticalBlockBorderWrapper"],
 [data-testid="stHorizontalBlock"],
 [data-testid="stColumn"],
-[data-testid="stVerticalBlockBorderWrapper"],
-[data-testid="stAppViewBlockContainer"] > div { background-color: transparent !important; }
-.stRadio > div, .stSelectSlider { background-color: transparent !important; }
+[data-testid="stColumn"] > div,
+[data-testid="stColumn"] > div > div,
+.element-container,
+.stMarkdown,
+div[class^="css"],
+div[class*=" css"] { background-color: transparent !important; }
+
+/* 라디오·슬라이더·입력 배경 투명 */
+.stRadio, .stRadio > div, .stRadio > label,
+.stSelectSlider, .stTextInput, .stTextArea,
+.stTextInput > div, .stTextArea > div { background-color: transparent !important; }
 
 /* ────────────────────────────────────
    사이드바 — 화이트 라이트 모드
@@ -389,7 +406,7 @@ def build_ai(posts, kw, cnt):
 with st.sidebar:
     st.markdown(
         f'<div style="padding:8px 0 4px">'
-        f'<span style="font-size:14px;font-weight:700;color:#111">🏥 DCX 평판 모니터</span>'
+        f'<span style="font-size:14px;font-weight:700;color:#111">🏥 DCX 고객 경험 평판 모니터</span>'
         f'<span class="ver-badge">{VERSION}</span>'
         f'</div>',
         unsafe_allow_html=True,
@@ -431,10 +448,10 @@ with st.sidebar:
 # ── 헤더 ─────────────────────────────────────────────────────────────────────
 st.markdown(f"""
 <div class="main-header">
-  <h1>📊 DCX 카페 평판 모니터
+  <h1>📊 DCX 고객 경험 평판 모니터
     <span style="font-size:13px;opacity:0.65;font-weight:400">{VERSION}</span>
   </h1>
-  <p>강북삼성병원 홍보팀 · 네이버 카페 고객 경험 수집 분석 시스템</p>
+  <p>네이버 카페 고객 경험 수집 분석</p>
 </div>
 """, unsafe_allow_html=True)
 
