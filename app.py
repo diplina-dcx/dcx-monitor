@@ -14,7 +14,7 @@ import csv
 import io
 from collections import Counter
 
-VERSION = "v3.2.0"
+VERSION = "v3.3.0"
 
 # ── 페이지 설정 ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -24,28 +24,28 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
+# ── CSS ─────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
+/* ── 폰트 ── */
 html, body, [class*="css"] {
     font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
 }
 
-/* ── 전체 레이아웃 배경 ── */
-.stApp { background-color: #1C1C1E !important; }
-.block-container {
-    padding-top: 0.8rem !important;
-    padding-bottom: 2rem !important;
-    background-color: #1C1C1E !important;
-}
+/* ══════════════════════════════════════
+   전체 배경 — 완전 라이트 모드
+══════════════════════════════════════ */
+html, body { background-color: #F0F2F6 !important; color: #111111 !important; }
 
-/* ── 메인 영역 모든 컨테이너 배경 완전 투명 ── */
-section[data-testid="stMain"],
-section[data-testid="stMain"] > div,
+.stApp,
+.stApp > div,
 [data-testid="stAppViewContainer"],
 [data-testid="stAppViewBlockContainer"],
+section[data-testid="stMain"],
+section[data-testid="stMain"] > div,
+.block-container,
 [data-testid="stVerticalBlock"],
 [data-testid="stVerticalBlockBorderWrapper"],
 [data-testid="stHorizontalBlock"],
@@ -53,28 +53,37 @@ section[data-testid="stMain"] > div,
 [data-testid="stColumn"] > div,
 [data-testid="stColumn"] > div > div,
 .element-container,
-.stMarkdown,
-div[class^="css"],
-div[class*=" css"] { background-color: transparent !important; }
+.stMarkdown { background-color: transparent !important; }
 
-/* 라디오·슬라이더·입력 배경 투명 */
-.stRadio, .stRadio > div, .stRadio > label,
-.stSelectSlider, .stTextInput, .stTextArea,
-.stTextInput > div, .stTextArea > div { background-color: transparent !important; }
-
-/* ────────────────────────────────────
-   사이드바 — 화이트 라이트 모드
-──────────────────────────────────── */
-[data-testid="stSidebar"] {
-    background-color: #FFFFFF !important;
-    border-right: 0.5px solid #E4E4E4 !important;
+/* 페이지 최외곽만 연회색 */
+.stApp { background-color: #F0F2F6 !important; }
+.block-container {
+    padding-top: 0.8rem !important;
+    padding-bottom: 2rem !important;
 }
+
+/* ── 텍스트 전체 다크 강제 ── */
+body, p, span, label, div, h1, h2, h3, h4, li, a {
+    color: #111111 !important;
+}
+.stRadio label, .stRadio span,
+div[role="radiogroup"] label span,
+div[role="radiogroup"] label p { color: #111111 !important; font-size: 12px !important; }
+.stCaption, .stCaption p { color: #888888 !important; font-size: 11px !important; }
+
+/* ── 위젯 배경 투명 ── */
+.stRadio, .stRadio > div,
+.stSelectSlider, .stTextInput > div, .stTextArea > div {
+    background-color: transparent !important;
+}
+
+/* ══════════════════════════════════════
+   사이드바 — 흰 배경, 다크 텍스트
+══════════════════════════════════════ */
+[data-testid="stSidebar"],
+[data-testid="stSidebar"] > div { background-color: #FFFFFF !important; }
 [data-testid="stSidebar"] * { color: #111111 !important; }
-[data-testid="stSidebar"] label {
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    color: #555555 !important;
-}
+[data-testid="stSidebar"] label { font-size: 11px !important; font-weight: 600 !important; }
 [data-testid="stSidebar"] input,
 [data-testid="stSidebar"] textarea {
     background: #F5F5F5 !important;
@@ -82,11 +91,6 @@ div[class*=" css"] { background-color: transparent !important; }
     border: 0.5px solid #E4E4E4 !important;
     border-radius: 8px !important;
     font-size: 12px !important;
-}
-[data-testid="stSidebar"] input::placeholder,
-[data-testid="stSidebar"] textarea::placeholder {
-    color: #BBBBBB !important;
-    font-size: 11px !important;
 }
 [data-testid="stSidebar"] .stButton button {
     background: #1E6FE8 !important;
@@ -97,11 +101,12 @@ div[class*=" css"] { background-color: transparent !important; }
     font-weight: 700 !important;
 }
 [data-testid="stSidebar"] hr { border-color: #EBEBEB !important; margin: 8px 0 !important; }
-[data-testid="stSidebar"] .stCaption p { color: #CCCCCC !important; font-size: 10px !important; }
 
-/* Lv2 흰 패널 카드 */
+/* ══════════════════════════════════════
+   Lv2 흰 패널 카드 — 메인 컨텐츠
+══════════════════════════════════════ */
 .panel-card {
-    background: #FFFFFF;
+    background: #FFFFFF !important;
     border-radius: 20px;
     border: 0.5px solid #E4E4E4;
     padding: 18px 20px 20px;
@@ -109,50 +114,46 @@ div[class*=" css"] { background-color: transparent !important; }
 }
 .panel-header {
     font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-    color: #999; text-transform: uppercase;
+    color: #999 !important; text-transform: uppercase;
     border-bottom: 0.5px solid #EBEBEB;
     padding-bottom: 7px; margin-bottom: 12px;
 }
 
 /* Lv3 내부 섹션 */
 .inner-card {
-    background: #F5F5F5;
+    background: #F5F5F5 !important;
     border-radius: 8px;
     border: 0.5px solid #EBEBEB;
     padding: 10px 12px;
     margin-bottom: 10px;
 }
 
-/* 메인 헤더 */
+/* ── 메인 헤더 ── */
 .main-header {
     background: linear-gradient(135deg, #1428A0 0%, #1E6FE8 100%);
     border-radius: 16px;
     padding: 20px 26px;
     margin-bottom: 14px;
 }
-.main-header h1 { margin:0; font-size:19px; font-weight:700; color:#fff; }
-.main-header p  { margin:3px 0 0; font-size:12px; color:#AAC9F8; }
+.main-header h1 { margin:0; font-size:19px; font-weight:700; color:#fff !important; }
+.main-header p  { margin:3px 0 0; font-size:12px; color:#AAC9F8 !important; }
 
-/* 라디오 텍스트 — 메인 영역 */
-div[role="radiogroup"] label span,
-div[role="radiogroup"] label p { color: #111111 !important; font-size: 12px !important; }
+/* ── 감성 뱃지 ── */
+.badge-pos { background:#E8F5EC; color:#1E8A3E !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
+.badge-neu { background:#FFF8E0; color:#B07D00 !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
+.badge-neg { background:#FDECEA; color:#C0392B !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
+.badge-mix { background:#F3EAF9; color:#7B3FA0 !important; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
+.badge-s   { background:#1E6FE8; color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
+.badge-a   { background:#1428A0; color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
+.badge-b   { background:#777;    color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
+.badge-c   { background:#BBB;    color:#fff !important; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
 
-/* 감성 뱃지 */
-.badge-pos { background:#E8F5EC; color:#1E8A3E; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
-.badge-neu { background:#FFF8E0; color:#B07D00; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
-.badge-neg { background:#FDECEA; color:#C0392B; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
-.badge-mix { background:#F3EAF9; color:#7B3FA0; border-radius:100px; padding:2px 9px; font-size:10px; font-weight:600; }
-.badge-s   { background:#1E6FE8; color:#fff; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
-.badge-a   { background:#1428A0; color:#fff; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
-.badge-b   { background:#777;    color:#fff; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
-.badge-c   { background:#BBB;    color:#fff; border-radius:4px; padding:1px 7px; font-size:9px; font-weight:700; }
-
-/* 게시글 카드 */
+/* ── 게시글 카드 ── */
 .post-card {
-    background: #FFFFFF;
+    background: #FFFFFF !important;
     border-radius: 10px;
     padding: 12px 14px;
-    margin-bottom: 4px;
+    margin-bottom: 7px;
     border-left: 3px solid #E4E4E4;
     border-top: 0.5px solid #F0F0F0;
     border-right: 0.5px solid #F0F0F0;
@@ -162,46 +163,57 @@ div[role="radiogroup"] label p { color: #111111 !important; font-size: 12px !imp
 .post-card.neg { border-left-color: #C0392B; }
 .post-card.neu { border-left-color: #B07D00; }
 .post-card.mix { border-left-color: #7B3FA0; }
-.post-title { font-size:12px; font-weight:600; color:#111; margin-bottom:3px; line-height:1.5; }
-.post-body  { font-size:11px; color:#666; line-height:1.6; margin-bottom:4px; }
-.post-meta  { font-size:10px; color:#aaa; }
-.post-tag   { background:#E8F0FD; color:#0D3A8A; border-radius:100px; padding:1px 6px; font-size:9px; margin-right:3px; }
+.post-title { font-size:12px; font-weight:600; color:#111 !important; margin-bottom:3px; line-height:1.5; }
+.post-body  { font-size:11px; color:#555 !important; line-height:1.6; margin-bottom:4px; }
+.post-meta  { font-size:10px; color:#aaa !important; }
+.post-tag   { background:#E8F0FD; color:#0D3A8A !important; border-radius:100px; padding:1px 6px; font-size:9px; margin-right:3px; }
 
-/* 지표 카드 */
+/* ── 지표 카드 ── */
 .metric-card { border-radius: 10px; padding: 12px 8px; text-align: center; }
 .metric-num  { font-size:24px; font-weight:700; line-height:1; }
 .metric-pct  { font-size:11px; margin-top:2px; }
 .metric-lbl  { font-size:10px; margin-top:3px; opacity:0.8; }
 
-/* 점수 박스 */
-.score-box   { background:#E8F0FD; border:1px solid #C5D8F9; border-radius:12px; padding:14px; text-align:center; }
-.score-num   { font-size:38px; font-weight:700; color:#1E6FE8; line-height:1; }
+/* ── 점수 박스 ── */
+.score-box   { background:#E8F0FD !important; border:1px solid #C5D8F9; border-radius:12px; padding:14px; text-align:center; }
+.score-num   { font-size:38px; font-weight:700; color:#1E6FE8 !important; line-height:1; }
 .score-grade { font-size:14px; font-weight:600; margin-top:3px; }
-.score-desc  { font-size:10px; color:#888; margin-top:3px; }
+.score-desc  { font-size:10px; color:#888 !important; margin-top:3px; }
 
-/* 키워드 태그 */
-.kw-tag { display:inline-block; background:#E8F0FD; color:#0D3A8A; border-radius:100px; padding:3px 9px; font-size:11px; margin:2px; }
+/* ── 키워드 태그 ── */
+.kw-tag { display:inline-block; background:#E8F0FD; color:#0D3A8A !important; border-radius:100px; padding:3px 9px; font-size:11px; margin:2px; }
 
-/* 버튼 */
+/* ── 버튼 공통 ── */
 .stButton button, .stDownloadButton button {
     border-radius: 8px !important;
     font-family: 'Pretendard', sans-serif !important;
     font-weight: 600 !important;
     font-size: 12px !important;
+    color: #111111 !important;
+}
+.stDownloadButton button {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E4E4E4 !important;
+    color: #111111 !important;
+}
+.stDownloadButton button:hover {
+    background-color: #F0F4FF !important;
+    border-color: #1E6FE8 !important;
+    color: #1E6FE8 !important;
 }
 
-/* 내용보기 버튼 소형 */
-.stButton button[data-testid*="btn_post"] {
-    padding: 2px 8px !important;
-    font-size: 11px !important;
-}
-
-/* 버전 뱃지 */
+/* ── 버전 뱃지 ── */
 .ver-badge {
-    display:inline-block; background:#E8F0FD; color:#1428A0;
+    display:inline-block; background:#E8F0FD; color:#1428A0 !important;
     border-radius:100px; padding:2px 9px; font-size:10px; font-weight:700;
     margin-left:8px; vertical-align:middle;
 }
+
+/* ── 불필요한 빈 요소 숨김 ── */
+.stMarkdown:empty,
+.stMarkdown p:empty,
+[data-testid="stMarkdownContainer"]:empty { display: none !important; }
+hr { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -614,7 +626,6 @@ if st.session_state.get("show_ai",False):
     st.markdown('<div class="inner-card">', unsafe_allow_html=True)
     st.text_area("ai", value=ai_data, height=170, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ── 게시글 + 우측 패널 ───────────────────────────────────────────────────────
