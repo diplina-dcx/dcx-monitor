@@ -22,7 +22,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── SMC 디자인 CSS ────────────────────────────────────────────────────────────
+# ── SMC 디자인 CSS (UI Guidelines v1 완전 반영) ───────────────────────────────
 st.markdown("""
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -31,98 +31,125 @@ html, body, [class*="css"] {
     font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif !important;
 }
 
-/* 전체 배경 */
+/* ── Lv1: 최상위 배경 #1C1C1E ── */
 .stApp { background-color: #1C1C1E; }
+.block-container { padding-top: 1rem !important; }
 
-/* 사이드바 */
+/* ── 사이드바 (Surface Dark) ── */
 [data-testid="stSidebar"] {
     background-color: #111111 !important;
     border-right: 1px solid #2C2C2E;
 }
-[data-testid="stSidebar"] * { color: #CCCCCC; }
-[data-testid="stSidebar"] label { color: #999 !important; font-size: 12px; }
+[data-testid="stSidebar"] * { color: #CCCCCC !important; }
+[data-testid="stSidebar"] label { color: #888 !important; font-size: 12px !important; }
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] textarea {
+    background: #1C1C1E !important;
+    color: #EEE !important;
+    border: 0.5px solid #3A3A3C !important;
+    border-radius: 8px !important;
+}
+[data-testid="stSidebar"] .stSlider label { color: #888 !important; }
 
-/* 메인 헤더 */
+/* ── Lv2: 화이트 카드 패널 (메인 컨텐츠 영역 전체) ── */
+/* 메인 컬럼들을 흰 카드로 감쌈 */
+.panel-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: 0.5px solid #E4E4E4;
+    padding: 20px 20px 24px;
+    margin-bottom: 16px;
+}
+
+/* 패널 헤더 바 */
+.panel-header {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: #999; text-transform: uppercase;
+    border-bottom: 0.5px solid #E8E8E8;
+    padding-bottom: 8px; margin-bottom: 14px;
+}
+
+/* ── 메인 헤더 ── */
 .main-header {
     background: linear-gradient(135deg, #1428A0 0%, #1E6FE8 100%);
     border-radius: 16px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    color: white;
+    padding: 22px 28px;
+    margin-bottom: 16px;
 }
-.main-header h1 { margin:0; font-size: 22px; font-weight: 700; color: white; }
-.main-header p  { margin:4px 0 0; font-size: 13px; color: #AAC9F8; }
+.main-header h1 { margin:0; font-size:20px; font-weight:700; color:#fff; }
+.main-header p  { margin:4px 0 0; font-size:12px; color:#AAC9F8; }
 
-/* 카드 공통 */
-.card {
-    background: #FFFFFF;
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 12px;
-    border: 0.5px solid #E4E4E4;
+/* ── 라디오 버튼 — 흰 배경 위 텍스트 강제 ── */
+div[data-testid="stHorizontalBlock"] .stRadio label,
+.stRadio label,
+.stRadio span,
+[data-testid="stWidgetLabel"],
+div[role="radiogroup"] label,
+div[role="radiogroup"] span {
+    color: #111111 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
 }
-.card-dark {
-    background: #2C2C2E;
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 12px;
-    border: 0.5px solid #3A3A3C;
-    color: #EEEEEE;
+div[role="radiogroup"] {
+    background: #F5F5F5;
+    border-radius: 8px;
+    padding: 6px 8px;
+    border: 0.5px solid #EBEBEB;
 }
 
-/* 감성 뱃지 */
-.badge-pos  { background:#E8F5EC; color:#1E8A3E; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
-.badge-neu  { background:#FFF8E0; color:#B07D00; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
-.badge-neg  { background:#FDECEA; color:#C0392B; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
-.badge-mix  { background:#F3EAF9; color:#7B3FA0; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
-.badge-s    { background:#1E6FE8; color:#fff;    border-radius:4px;    padding:2px 8px;  font-size:10px; font-weight:600; }
-.badge-a    { background:#1428A0; color:#fff;    border-radius:4px;    padding:2px 8px;  font-size:10px; font-weight:600; }
-.badge-b    { background:#555;    color:#fff;    border-radius:4px;    padding:2px 8px;  font-size:10px; font-weight:600; }
-.badge-c    { background:#999;    color:#fff;    border-radius:4px;    padding:2px 8px;  font-size:10px; font-weight:600; }
+/* ── 캡션 텍스트 ── */
+.stCaption, .stCaption p { color: #888 !important; font-size: 11px !important; }
 
-/* 게시글 카드 */
+/* ── Lv3: 내부 섹션 카드 (중첩 영역 #F5F5F5) ── */
+.inner-card {
+    background: #F5F5F5;
+    border-radius: 8px;
+    border: 0.5px solid #EBEBEB;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+
+/* ── 감성 뱃지 ── */
+.badge-pos { background:#E8F5EC; color:#1E8A3E; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
+.badge-neu { background:#FFF8E0; color:#B07D00; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
+.badge-neg { background:#FDECEA; color:#C0392B; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
+.badge-mix { background:#F3EAF9; color:#7B3FA0; border-radius:100px; padding:2px 10px; font-size:11px; font-weight:600; }
+.badge-s   { background:#1E6FE8; color:#fff; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+.badge-a   { background:#1428A0; color:#fff; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+.badge-b   { background:#555;    color:#fff; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+.badge-c   { background:#999;    color:#fff; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+
+/* ── 게시글 카드 ── */
 .post-card {
     background: #FFFFFF;
     border-radius: 10px;
     padding: 14px 16px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     border-left: 4px solid #E4E4E4;
+    border-top: 0.5px solid #F0F0F0;
+    border-right: 0.5px solid #F0F0F0;
+    border-bottom: 0.5px solid #F0F0F0;
 }
 .post-card.pos { border-left-color: #1E8A3E; }
 .post-card.neg { border-left-color: #C0392B; }
 .post-card.neu { border-left-color: #B07D00; }
 .post-card.mix { border-left-color: #7B3FA0; }
-.post-title  { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 4px; }
-.post-body   { font-size: 12px; color: #555; line-height: 1.6; margin-bottom: 6px; }
-.post-meta   { font-size: 11px; color: #999; }
-.post-tag    { background:#E8F0FD; color:#0D3A8A; border-radius:100px; padding:1px 7px; font-size:10px; margin-right:4px; }
+.post-title { font-size:13px; font-weight:600; color:#111; margin-bottom:4px; }
+.post-body  { font-size:12px; color:#555; line-height:1.6; margin-bottom:6px; }
+.post-meta  { font-size:11px; color:#999; }
+.post-tag   { background:#E8F0FD; color:#0D3A8A; border-radius:100px; padding:1px 7px; font-size:10px; margin-right:4px; }
 
-/* 지표 카드 */
+/* ── 지표 카드 ── */
 .metric-card {
     border-radius: 10px;
-    padding: 14px;
+    padding: 14px 10px;
     text-align: center;
 }
-.metric-num  { font-size: 28px; font-weight: 700; line-height: 1; }
-.metric-pct  { font-size: 12px; margin-top: 2px; }
-.metric-label{ font-size: 11px; margin-top: 4px; opacity: 0.8; }
+.metric-num   { font-size:26px; font-weight:700; line-height:1; }
+.metric-pct   { font-size:12px; margin-top:2px; }
+.metric-label { font-size:11px; margin-top:4px; opacity:0.8; }
 
-/* 버튼 */
-.stButton button {
-    border-radius: 8px !important;
-    font-family: 'Pretendard', sans-serif !important;
-    font-weight: 600 !important;
-}
-
-/* 섹션 타이틀 */
-.section-title {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-    color: #888; text-transform: uppercase;
-    border-bottom: 0.5px solid #E8E8E8;
-    padding-bottom: 6px; margin-bottom: 12px;
-}
-
-/* 점수 박스 */
+/* ── 점수 박스 ── */
 .score-box {
     background: #E8F0FD;
     border: 1px solid #C5D8F9;
@@ -130,16 +157,35 @@ html, body, [class*="css"] {
     padding: 16px;
     text-align: center;
 }
-.score-num  { font-size: 42px; font-weight: 700; color: #1E6FE8; line-height: 1; }
-.score-grade{ font-size: 16px; font-weight: 600; margin-top: 4px; }
-.score-desc { font-size: 11px; color: #888; margin-top: 4px; }
+.score-num   { font-size:40px; font-weight:700; color:#1E6FE8; line-height:1; }
+.score-grade { font-size:15px; font-weight:600; margin-top:4px; }
+.score-desc  { font-size:11px; color:#888; margin-top:4px; }
 
-/* 키워드 태그 */
+/* ── 키워드 태그 ── */
 .kw-tag {
     display: inline-block;
     background: #E8F0FD; color: #0D3A8A;
     border-radius: 100px; padding: 3px 10px;
     font-size: 12px; margin: 2px;
+}
+
+/* ── 섹션 구분선 ── */
+hr { border-color: #E8E8E8 !important; margin: 16px 0 !important; }
+
+/* ── 다운로드/버튼 ── */
+.stButton button, .stDownloadButton button {
+    border-radius: 8px !important;
+    font-family: 'Pretendard', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+}
+
+/* ── 구분선 위 섹션 타이틀 ── */
+.section-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: #999; text-transform: uppercase;
+    border-bottom: 0.5px solid #E8E8E8;
+    padding-bottom: 6px; margin-bottom: 12px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -526,13 +572,14 @@ if not posts:
     st.stop()
 
 
-# ── 분석 요약 섹션 ────────────────────────────────────────────────────────────
+# ── 분석 요약 섹션 (Lv2 흰 카드) ─────────────────────────────────────────────
 counts = Counter(p.get("sentiment","neutral") for p in posts)
 total  = len(posts)
 score  = rep_score(counts, total)
 grade, grade_color = grade_label(score)
 
-st.markdown('<div class="section-title">📊 감성 분석 요약</div>', unsafe_allow_html=True)
+st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+st.markdown('<div class="panel-header">📊 감성 분석 요약</div>', unsafe_allow_html=True)
 
 col_s, col_pos, col_neu, col_neg, col_mix = st.columns([1.2, 1, 1, 1, 1])
 
@@ -559,13 +606,14 @@ for col, key in zip([col_pos, col_neu, col_neg, col_mix],
         </div>
         """, unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)  # /panel-card
 
-# ── 차트 섹션 ────────────────────────────────────────────────────────────────
+# ── 차트 + 키워드 섹션 (Lv2 흰 카드 2열) ────────────────────────────────────
 chart_col, kw_col = st.columns([1, 1])
 
 with chart_col:
-    st.markdown('<div class="section-title">감성 분포 차트</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-card" style="height:100%">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">🍩 감성 분포 차트</div>', unsafe_allow_html=True)
     try:
         import plotly.graph_objects as go
         labels = [SENT_KR[k] for k in ["positive","neutral","negative","mixed"]]
@@ -580,7 +628,7 @@ with chart_col:
         ))
         fig.update_layout(
             margin=dict(t=10, b=10, l=10, r=10),
-            height=220,
+            height=230,
             showlegend=False,
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
@@ -591,36 +639,40 @@ with chart_col:
             c = counts.get(key,0)
             pct = c/total*100 if total else 0
             st.markdown(f"""
-            <div style="margin-bottom:6px">
-              <span style="color:{SENT_COLOR[key]};font-weight:600">{SENT_KR[key]}</span>
-              <span style="font-size:12px;color:#888;margin-left:8px">{c}건 ({pct:.1f}%)</span>
+            <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px">
+              <span style="color:{SENT_COLOR[key]};font-weight:600;min-width:32px">{SENT_KR[key]}</span>
+              <div style="flex:1;background:#F0F0F0;border-radius:4px;height:8px">
+                <div style="width:{pct:.0f}%;background:{SENT_COLOR[key]};height:100%;border-radius:4px"></div>
+              </div>
+              <span style="font-size:12px;color:#888;min-width:52px">{c}건 ({pct:.0f}%)</span>
             </div>
             """, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with kw_col:
-    st.markdown('<div class="section-title">주요 언급 키워드</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-card" style="height:100%">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">🏷 주요 언급 키워드</div>', unsafe_allow_html=True)
     tag_counter = Counter(t for p in posts for t in p.get("tags",[]))
     if tag_counter:
         tags_html = ""
         for tag, cnt in tag_counter.most_common(12):
-            tags_html += f'<span class="kw-tag">#{tag} <b>{cnt}</b></span>'
-        st.markdown(f'<div style="line-height:2.2">{tags_html}</div>',
-                    unsafe_allow_html=True)
+            tags_html += f'<span class="kw-tag">#{tag} <b style="color:#1428A0">{cnt}</b></span>'
+        st.markdown(f'<div style="line-height:2.4">{tags_html}</div>', unsafe_allow_html=True)
     else:
-        st.caption("태그 없음")
+        st.markdown('<span style="color:#aaa;font-size:13px">태그 없음</span>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ── 내보내기 섹션 ─────────────────────────────────────────────────────────────
-st.markdown("---")
-st.markdown('<div class="section-title">📤 데이터 출력 및 내보내기</div>', unsafe_allow_html=True)
-
-exp1, exp2, exp3, exp4 = st.columns(4)
+# ── 내보내기 섹션 (Lv2 흰 카드) ──────────────────────────────────────────────
+st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+st.markdown('<div class="panel-header">📤 데이터 출력 및 내보내기</div>', unsafe_allow_html=True)
 
 csv_data = build_csv(posts)
 txt_data = build_txt(posts, st.session_state.keyword_label, counts)
 ai_data  = build_ai_prompt(posts, st.session_state.keyword_label, counts)
 today    = datetime.date.today().strftime("%Y%m%d")
 
+exp1, exp2, exp3, exp4 = st.columns(4)
 with exp1:
     st.download_button(
         "📊 엑셀 저장 (.csv)",
@@ -650,31 +702,43 @@ with exp4:
         st.session_state.show_ai = not st.session_state.get("show_ai", False)
 
 if st.session_state.get("show_ai", False):
+    st.markdown('<div class="inner-card">', unsafe_allow_html=True)
     st.text_area("AI 분석용 프롬프트 (복사하여 ChatGPT/Claude에 붙여넣기)",
-                 value=ai_data, height=200)
+                 value=ai_data, height=200, label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)  # /panel-card
 
 
-# ── 게시글 리스트 섹션 ────────────────────────────────────────────────────────
-st.markdown("---")
-
+# ── 게시글 리스트 + 우측 패널 (Lv2 흰 카드 2열) ─────────────────────────────
 list_col, detail_col = st.columns([3, 2])
 
 with list_col:
-    st.markdown('<div class="section-title">📋 수집 게시글</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">📋 수집 게시글</div>', unsafe_allow_html=True)
 
-    # 필터 탭
-    filter_tab = st.radio(
-        "감성 필터",
-        ["전체", "긍정", "중립", "부정", "혼재"],
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-    sort_opt = st.radio(
-        "정렬",
-        ["최신순", "점수순(긍정↑)", "점수순(부정↑)", "등급순"],
-        horizontal=True,
-        label_visibility="collapsed",
-    )
+    # ── 필터/정렬 (Lv3 내부 섹션 #F5F5F5) ──
+    st.markdown('<div class="inner-card">', unsafe_allow_html=True)
+    filter_col, sort_col = st.columns([1, 1])
+    with filter_col:
+        st.markdown('<span style="font-size:11px;color:#888;font-weight:600">감성 필터</span>',
+                    unsafe_allow_html=True)
+        filter_tab = st.radio(
+            "감성 필터",
+            ["전체", "긍정", "중립", "부정", "혼재"],
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+    with sort_col:
+        st.markdown('<span style="font-size:11px;color:#888;font-weight:600">정렬 기준</span>',
+                    unsafe_allow_html=True)
+        sort_opt = st.radio(
+            "정렬",
+            ["최신순", "점수순(긍정↑)", "점수순(부정↑)", "등급순"],
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+    st.markdown('</div>', unsafe_allow_html=True)  # /inner-card
 
     # 필터 적용
     sent_map = {"전체":None,"긍정":"positive","중립":"neutral","부정":"negative","혼재":"mixed"}
@@ -692,19 +756,20 @@ with list_col:
         grade_order = {"S":0,"A":1,"B":2,"C":3}
         filtered = sorted(filtered, key=lambda p: grade_order.get(p.get("quality_grade","C"),3))
 
-    st.caption(f"{len(filtered)}건 표시 중 (전체 {total}건)")
+    st.markdown(f'<p style="font-size:12px;color:#888;margin:4px 0 8px">'
+                f'{len(filtered)}건 표시 중 (전체 {total}건)</p>', unsafe_allow_html=True)
 
-    # 게시글 카드 렌더
+    # 게시글 카드 렌더 (Lv3 흰 카드)
     for p in filtered[:50]:
-        sent  = p.get("sentiment","neutral")
-        sc    = p.get("sentiment_score",0)
+        sent    = p.get("sentiment","neutral")
+        sc      = p.get("sentiment_score",0)
         grade_p = p.get("quality_grade","C")
-        pub   = fmt_date(p.get("pubDate",""))
-        cafe  = p.get("cafename","")
-        title = clean(p.get("title","(제목 없음)"))
-        desc  = clean(p.get("description",""))
-        link  = p.get("link","")
-        tags  = p.get("tags",[])
+        pub     = fmt_date(p.get("pubDate",""))
+        cafe    = p.get("cafename","")
+        title   = clean(p.get("title","(제목 없음)"))
+        desc    = clean(p.get("description",""))
+        link    = p.get("link","")
+        tags    = p.get("tags",[])
 
         badge_sent  = f'<span class="badge-{sent[:3]}">{SENT_ICON[sent]} {SENT_KR[sent]}</span>'
         badge_grade = f'<span class="badge-{grade_p.lower()}">{grade_p}등급</span>'
@@ -728,13 +793,17 @@ with list_col:
         """, unsafe_allow_html=True)
 
     if len(filtered) > 50:
-        st.caption(f"상위 50건만 표시 (전체 {len(filtered)}건 — CSV로 전체 다운로드)")
+        st.markdown(f'<p style="font-size:11px;color:#aaa">상위 50건만 표시 — 전체 {len(filtered)}건은 CSV로 다운로드</p>',
+                    unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)  # /panel-card
 
 with detail_col:
-    st.markdown('<div class="section-title">🏅 품질 등급별 현황</div>', unsafe_allow_html=True)
+    # ── 품질 등급 카드 ──
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">🏅 품질 등급별 현황</div>', unsafe_allow_html=True)
 
     grade_counts = Counter(p.get("quality_grade","C") for p in posts)
-    for g, label, desc_g in [
+    for g, lbl, desc_g in [
         ("S","S등급","명의 언급 + 직접 경험 + 100자↑"),
         ("A","A등급","직접 경험 + 병원 언급 + 50자↑"),
         ("B","B등급","간접 경험 또는 병원 언급 + 30자↑"),
@@ -743,18 +812,20 @@ with detail_col:
         cnt = grade_counts.get(g,0)
         pct = cnt/total*100 if total else 0
         st.markdown(f"""
-        <div style="display:flex;align-items:center;margin-bottom:8px">
-            <span class="badge-{g.lower()}" style="min-width:44px;text-align:center">{label}</span>
-            <div style="flex:1;background:#F0F0F0;border-radius:4px;height:10px;margin:0 10px">
+        <div style="display:flex;align-items:center;margin-bottom:6px">
+            <span class="badge-{g.lower()}" style="min-width:44px;text-align:center">{lbl}</span>
+            <div style="flex:1;background:#F0F0F0;border-radius:4px;height:8px;margin:0 10px">
                 <div style="width:{pct:.0f}%;background:#1E6FE8;height:100%;border-radius:4px"></div>
             </div>
-            <span style="font-size:12px;color:#555;min-width:60px">{cnt}건 ({pct:.0f}%)</span>
+            <span style="font-size:12px;color:#555;min-width:58px">{cnt}건 ({pct:.0f}%)</span>
         </div>
-        <div style="font-size:10px;color:#aaa;margin-bottom:10px;padding-left:52px">{desc_g}</div>
+        <div style="font-size:10px;color:#bbb;margin-bottom:10px;padding-left:52px">{desc_g}</div>
         """, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown('<div class="section-title">📌 S등급 게시글 (명의 브랜딩 활용)</div>', unsafe_allow_html=True)
+    # ── S등급 긍정 카드 ──
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">📌 S등급 긍정 (명의 브랜딩 활용)</div>', unsafe_allow_html=True)
 
     s_posts = [p for p in posts if p.get("quality_grade")=="S"
                and p.get("sentiment")=="positive"][:5]
@@ -775,10 +846,13 @@ with detail_col:
             </div>
             """, unsafe_allow_html=True)
     else:
-        st.caption("S등급 긍정 게시글이 없습니다.")
+        st.markdown('<span style="font-size:12px;color:#aaa">S등급 긍정 게시글이 없습니다.</span>',
+                    unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown('<div class="section-title">⚠️ 부정 S/A등급 (즉시 대응 필요)</div>', unsafe_allow_html=True)
+    # ── 부정 긴급 대응 카드 ──
+    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-header">⚠️ 부정 S/A등급 (즉시 대응 필요)</div>', unsafe_allow_html=True)
 
     neg_urgent = [p for p in posts
                   if p.get("sentiment")=="negative"
@@ -800,4 +874,6 @@ with detail_col:
             </div>
             """, unsafe_allow_html=True)
     else:
-        st.caption("긴급 대응이 필요한 게시글이 없습니다.")
+        st.markdown('<span style="font-size:12px;color:#aaa">긴급 대응 필요 게시글 없음</span>',
+                    unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
